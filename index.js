@@ -14,7 +14,7 @@ app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.USER}:${process.env.PASSWORD}@cluster0.jt15atw.mongodb.net/?retryWrites=true&w=majority`;
 
-
+// verifyJWT 
 const verifyJWT = (req, res, next) => {
      const authorization = req.headers.authorization;
      if (!authorization) {
@@ -46,7 +46,7 @@ const client = new MongoClient(uri, {
 async function run() {
      //   try {
      // Connect the client to the server	(optional starting in v4.7)
-     await client.connect();
+     // await client.connect();
      // Send a ping to confirm a successful connection
 
      const TaskCollection = client.db("TaskToDO").collection("task");
@@ -62,12 +62,13 @@ async function run() {
      // task related API 
 
 
-     app.get('/task/:email',verifyJWT, async (req, res) => {
+     app.get('/task/:email', verifyJWT, async (req, res) => {
           const query = { email: req.params.email }
           const result = await TaskCollection.find(query).toArray();
           res.send(result)
 
      })
+
 
      app.get('/task/:id', verifyJWT, async (req, res) => {
           const query = { _id: new ObjectId(req.params.id) }
@@ -107,12 +108,10 @@ async function run() {
                }
           }
 
-          const result = await TaskCollection.updateOne(filter,upItem,options);
+          const result = await TaskCollection.updateOne(filter, upItem, options);
           res.send(result)
 
      })
-
-
 
      app.patch('/task/:id', verifyJWT, async (req, res) => {
           const id = req.params.id;
@@ -130,10 +129,7 @@ async function run() {
 
      await client.db("admin").command({ ping: 1 });
      console.log("Pinged your deployment. You successfully connected to MongoDB!");
-     //   } finally {
-     //     // Ensures that the client will close when you finish/error
-     //     await client.close();
-     //   }
+
 }
 run().catch(console.dir);
 
