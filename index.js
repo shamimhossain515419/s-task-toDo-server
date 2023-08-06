@@ -50,6 +50,7 @@ async function run() {
      // Send a ping to confirm a successful connection
 
      const TaskCollection = client.db("TaskToDO").collection("task");
+     const UserCollection = client.db("TaskToDO").collection("User");
      //  JWT token 
      app.post('/jwt', (req, res) => {
           const user = req.body;
@@ -70,17 +71,18 @@ async function run() {
      })
 
 
-     app.get('/task/:id', verifyJWT, async (req, res) => {
-          const query = { _id: new ObjectId(req.params.id) }
+     app.get('/taskSingle/:id', async (req, res) => {
+          const query = { _id: new ObjectId(req?.params?.id) }
           const result = await TaskCollection.findOne(query)
           res.send(result)
 
-     })
+     });
+
+
      app.post('/task', verifyJWT, async (req, res) => {
           const body = req.body;
           const result = await TaskCollection.insertOne(body)
           res.send(result)
-
      })
 
      app.delete('/task/:id', verifyJWT, async (req, res) => {
@@ -125,7 +127,18 @@ async function run() {
           res.send(result);
      })
 
+     // user relateAPI 
+     app.post('/user', verifyJWT, async (req, res) => {
+          const body = req.body;
+          const result = await UserCollection.insertOne(body);
+          res.send(result);
+     })
+     app.get('/user/:email', verifyJWT, async (req, res) => {
+          const email = { email: req.params.email }
 
+          const result = await UserCollection.findOne(email);
+          res.send(result);
+     })
 
      await client.db("admin").command({ ping: 1 });
      console.log("Pinged your deployment. You successfully connected to MongoDB!");
